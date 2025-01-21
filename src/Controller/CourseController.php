@@ -15,4 +15,5 @@ class CourseController extends AbstractController
             'controller_name' => 'CourseController',
         ]);
     }
+    
 }

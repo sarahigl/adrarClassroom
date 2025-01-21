@@ -46,21 +46,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $user_image = null;
 
     /**
-     * @var Collection<int, UserChapter>
-     */
-    #[ORM\OneToMany(targetEntity: UserChapter::class, mappedBy: 'id_user')]
-    private Collection $userChapters;
-
-    /**
      * @var Collection<int, Review>
      */
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'id_user')]
     private Collection $reviews;
 
+    /**
+     * @var Collection<int, Chapter>
+     */
+    #[ORM\ManyToMany(targetEntity: Chapter::class, mappedBy: 'users')]
+    private Collection $chapters;
+
+   
+
     public function __construct()
     {
-        $this->userChapters = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->chapters = new ArrayCollection();
     }
 
 
@@ -177,36 +179,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, UserChapter>
-     */
-    public function getUserChapters(): Collection
-    {
-        return $this->userChapters;
-    }
-
-    public function addUserChapter(UserChapter $userChapter): static
-    {
-        if (!$this->userChapters->contains($userChapter)) {
-            $this->userChapters->add($userChapter);
-            $userChapter->setIdUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserChapter(UserChapter $userChapter): static
-    {
-        if ($this->userChapters->removeElement($userChapter)) {
-            // set the owning side to null (unless already changed)
-            if ($userChapter->getIdUser() === $this) {
-                $userChapter->setIdUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Review>
      */
     public function getReviews(): Collection
@@ -238,5 +210,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __tostring(){
         return $this->getUserName();
     }
+
+    /**
+     * @return Collection<int, Chapter>
+     */
+    public function getChapters(): Collection
+    {
+        return $this->chapters;
+    }
+
+    public function addChapter(Chapter $chapter): static
+    {
+        if (!$this->chapters->contains($chapter)) {
+            $this->chapters->add($chapter);
+            $chapter->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChapter(Chapter $chapter): static
+    {
+        if ($this->chapters->removeElement($chapter)) {
+            $chapter->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    
 
 }

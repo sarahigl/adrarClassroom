@@ -25,11 +25,6 @@ class Chapter
     #[ORM\Column(type: Types::TEXT)]
     private ?string $chapter_content = null;
 
-    /**
-     * @var Collection<int, UserChapter>
-     */
-    #[ORM\ManyToMany(targetEntity: UserChapter::class, mappedBy: 'id_chapter')]
-    private Collection $userChapters;
 
     /**
      * @var Collection<int, Course>
@@ -37,10 +32,19 @@ class Chapter
     #[ORM\OneToMany(targetEntity: Course::class, mappedBy: 'chapter')]
     private Collection $id_course;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'chapters')]
+    private Collection $users;
+
+
+
     public function __construct()
     {
-        $this->userChapters = new ArrayCollection();
         $this->id_course = new ArrayCollection();
+        $this->users = new ArrayCollection();
+        
     }
 
     
@@ -87,33 +91,6 @@ class Chapter
     }
 
     /**
-     * @return Collection<int, UserChapter>
-     */
-    public function getUserChapters(): Collection
-    {
-        return $this->userChapters;
-    }
-
-    public function addUserChapter(UserChapter $userChapter): static
-    {
-        if (!$this->userChapters->contains($userChapter)) {
-            $this->userChapters->add($userChapter);
-            $userChapter->addIdChapter($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserChapter(UserChapter $userChapter): static
-    {
-        if ($this->userChapters->removeElement($userChapter)) {
-            $userChapter->removeIdChapter($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Course>
      */
     public function getIdCourse(): Collection
@@ -142,12 +119,45 @@ class Chapter
 
         return $this;
     }
+
     public function __tostring(){
         return $this->getChapterTitle();
     }
-    public function getByPosition(){
-        return $this->getChapterPosition();
+
+    // public function getByPosition(){
+        
+    //     return $this->getChapterPosition(
+    //                     'group_by' => function(Chapter $chapter, $key, $value) {
+    //                         return $chapter->getType()->getName();
+    //                     };
+
+
+    //     );
+    // }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
     }
 
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+        }
 
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        $this->users->removeElement($user);
+
+        return $this;
+    }
+
+    
 }

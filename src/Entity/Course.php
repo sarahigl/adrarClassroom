@@ -20,8 +20,7 @@ class Course
     #[ORM\Column(length: 100)]
     private ?string $course_synopsis = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $course_level = null;
+
 
     #[ORM\Column]
     private ?int $course_estimation_time = null;
@@ -69,18 +68,6 @@ class Course
     public function setCourseSynopsis(string $course_synopsis): static
     {
         $this->course_synopsis = $course_synopsis;
-
-        return $this;
-    }
-
-    public function getCourseLevel(): ?int
-    {
-        return $this->course_level;
-    }
-
-    public function setCourseLevel(int $course_level): static
-    {
-        $this->course_level = $course_level;
 
         return $this;
     }

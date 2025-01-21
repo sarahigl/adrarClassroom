@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\ReviewRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,28 +12,39 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils, ReviewRepository $reviewRepository): Response
     {
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
         
-        if($this->getUser() instanceof User){
-            return $this->redirectToRoute('admin');
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+        $reviews = $reviewRepository->findAll();
+        // dump($reviews);
+        
+        
+        if ($this->getUser()) {
+            if ($this->isGranted('ROLE_ADMIN')) {
+                return $this->redirectToRoute('admin'); 
+            } elseif ($this->isGranted('ROLE_USER')) {
+                return $this->redirectToRoute('user_dashboard');
+            }
         }
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
+            'reviews' => $reviews, 
             'error' => $error,
         ]);
+       
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
-    public function logout(): void
+    public function logout(ReviewRepository $reviewRepository): Response
     {
         
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        $reviews = $reviewRepository->findAll();
+        // throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        return $this->render('security/login.html.twig', [
+            'reviews' => $reviews, 
+        ]);
     }
+    
 }

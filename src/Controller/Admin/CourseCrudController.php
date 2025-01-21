@@ -27,7 +27,6 @@ class CourseCrudController extends AbstractCrudController
     {
        
             yield IdField::new('id')->hideOnForm()->hideOnIndex();
-          
             yield AssociationField::new('chapter')
                  ->setQueryBuilder( 
                     fn(ORMQueryBuilder $queryBuilder) => $queryBuilder->getEntityManager()->getRepository(Chapter::class)->findAll() 
