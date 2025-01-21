@@ -1,0 +1,1 @@
+Plateforme de cours Adrarclassroom avec interface utilisateurs et administrateurs. Projet réalisé dans le cadre de l'apprentissage du framework Symfony avec les technos : php, twig et l'utilisation du bundle easy admin.
